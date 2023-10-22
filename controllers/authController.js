@@ -63,7 +63,7 @@ const login = async (req, res) => {
         if (user.password === password) {
             // Create a JWT token
             const token = jwt.sign({ userId: user._id }, process.env.jwtsecret, { expiresIn: '1h' }); // Adjust the expiration time as needed
-
+            
             res.status(200).json({ message: 'Login successful', token, user: { id:user._id } });
         } else {
             res.status(401).json({ message: 'Authentication failed' });

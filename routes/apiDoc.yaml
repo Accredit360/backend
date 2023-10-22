@@ -23,7 +23,7 @@ paths:
               type: object
               properties:
                 username:
-                  type: string
+                  type: string                                                         
                 password:
                   type: string
       responses:

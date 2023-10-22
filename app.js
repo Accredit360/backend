@@ -27,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Require and use your routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const indexRoutes = require('./routes/indexRoutes');
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -55,6 +56,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, customOptions));
 
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+app.use('/', indexRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -3,10 +3,9 @@ const User = require('../models/User'); // Import your User model
 
 const profile = async (req, res) => {
     const userId = req.body.id;
-    console.log(userId);
     //display profile as json
     try {
-        const user = await User.findById(userId).select('-isAdmin');
+        const user = await User.findById(userId).select('-isAdmin').select('-password');
        
 
         res.status(200).json(user);
