@@ -1,0 +1,26 @@
+{
+  "name": "accredit360",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "hbs": "^4.2.0",
+    "http-errors": "~1.6.3",
+    "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "libphonenumber-js": "^1.10.48",
+    "mongodb": "^6.2.0",
+    "mongoose": "^7.6.3",
+    "morgan": "~1.9.1",
+    "nodemon": "^3.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  }
+}
