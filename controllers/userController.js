@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User'); // Import your User model
+const activeTokens = require('../tokenManager');
 
 const profile = async (req, res) => {
     const userId = req.body.id;

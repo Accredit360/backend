@@ -8,7 +8,7 @@ var logger = require('morgan');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 require('dotenv').config(); 
-
+require('./tokenManager');
 var app = express();
 
 // view engine setup

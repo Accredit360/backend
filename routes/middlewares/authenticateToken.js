@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const activeTokens = require('../../tokenManager');
 
 function authenticateToken(req, res, next) {
   const token = req.headers.authorization; // Get the token from the request header
@@ -12,8 +13,14 @@ function authenticateToken(req, res, next) {
       return res.sendStatus(403); // Forbidden
     }
 
-    req.user = user; // Make the user information available in the request for future use
-    next(); // Continue to the next middleware or route
+    if (activeTokens.has(token)) {
+      req.user = user; // Make the user information available in the request for future use
+      next(); // Continue to the next middleware or route
+    } else {
+      res.send("Token Expired")
+    }
+
+
   });
 }
 

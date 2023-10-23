@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User'); // Import your User model
 const PhoneNumber = require('libphonenumber-js');
+const activeTokens = require('../tokenManager');
 const register = async (req, res) => {
     const { name, phone, email, username, password } = req.body;
 
@@ -48,30 +49,51 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    const { username, password } = req.body;
+    const token = req.headers.authorization;
+    if (!token) {
+        const { username, password } = req.body;
 
-    try {
-        // Find the user by username
-        const user = await User.findOne({ username });
+        try {
+            // Find the user by username
+            const user = await User.findOne({ username });
 
-        if (!user) {
-            res.status(401).json({ message: 'Authentication failed' });
-            return;
+            if (!user) {
+                res.status(401).json({ message: 'Authentication failed' });
+                return;
+            }
+
+            // Check if the password is correct (you should use a proper password hashing method)
+            if (user.password === password) {
+                // Create a JWT token
+                const token = jwt.sign({ userId: user._id }, process.env.jwtsecret, { expiresIn: '1h' }); // Adjust the expiration time as needed
+                activeTokens.add(token);
+                res.status(200).json({ message: 'Login successful', token, user: { id: user._id } });
+            } else {
+                res.status(401).json({ message: 'Authentication failed' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
         }
-
-        // Check if the password is correct (you should use a proper password hashing method)
-        if (user.password === password) {
-            // Create a JWT token
-            const token = jwt.sign({ userId: user._id }, process.env.jwtsecret, { expiresIn: '1h' }); // Adjust the expiration time as needed
-            
-            res.status(200).json({ message: 'Login successful', token, user: { id:user._id } });
-        } else {
-            res.status(401).json({ message: 'Authentication failed' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+    } else {
+        res.send('Already Logged In, Try clearing cookies.')
     }
 };
+const logout = async (req, res) => {
+    const  token  = req.headers.authorization;
+    if (!token) {
+        return res.status(400).json({ message: 'No token provided' });
+    }
 
-module.exports = { register, login };
+    // Check if the token is in the activeTokens set
+    if (activeTokens.has(token)) {
+        // Remove the token (this step is optional and can be used for blacklisting)
+        activeTokens.delete(token);
+
+        return res.status(200).json({ message: 'Logout successful' });
+    }
+
+    res.status(401).json({ message: 'Invalid or expired token' });
+};
+
+module.exports = { register, login, logout };

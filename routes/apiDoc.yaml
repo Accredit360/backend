@@ -115,3 +115,23 @@ paths:
            description: Unauthorized
         '500':
            description: Server error
+  /auth/logout:
+      post:
+        summary: Logout user and invalidate token
+        description: Logs out a user and invalidates their token. The token is removed from the activeTokens set.
+        tags:
+          - Authentication
+        security:
+          - jwtAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+        responses:
+          '200':
+            description: Logout successful
+          '400':
+            description: No token provided
+          '401':
+            description: Invalid or expired token
