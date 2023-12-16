@@ -1,31 +1,28 @@
-openapi: 3.0.0
-info:
-  title: API Documentation
-  version: 1.0.0
+---
 components:
   securitySchemes:
     jwtAuth:
-      type: apiKey
       in: header
       name: authorization
-
+      type: apiKey
+info:
+  title: API Documentation
+  version: 1.0.0
+openapi: 3.0.0
 paths:
   /auth/login:
     post:
-      summary: Login as a user
-      tags:
-        - Authentication
       requestBody:
-        required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
-              type: object
               properties:
-                username:
-                  type: string                                                         
                 password:
                   type: string
+                username:
+                  type: string
+              type: object
+        required: true
       responses:
         '200':
           description: User logged in successfully
@@ -33,35 +30,70 @@ paths:
           description: Bad request
         '401':
           description: Authentication failed
-
-  /auth/register:
-    post:
-      summary: Register a new user
+      summary: Login as a user
       tags:
         - Authentication
+  /auth/logout:
+    post:
+      description: Logs out a user and invalidates their token. The token is removed from the activeTokens set.
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
+      responses:
+        '200':
+          description: Logout successful
+        '400':
+          description: No token provided
+        '401':
+          description: Invalid or expired token
+      security:
+        - jwtAuth: []
+      summary: Logout user and invalidate token
+      tags:
+        - Authentication
+  /auth/register:
+    post:
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
               properties:
-                email:
+                department:
+                  example: Computer Science
                   type: string
+                email:
                   example: johndoe@example.com
                   format: email
+                  type: string
+                facCode:
+                  example: FAC123
+                  type: string
                 name:
-                  type: string
                   example: John Doe
+                  type: string
                 password:
-                  type: string
                   example: mysecretpassword
+                  type: string
                 phone:
-                  type: string
                   example: '1234567890'
-                username:
                   type: string
+                profilePic:
+                  description: Profile picture file
+                  format: binary
+                  type: string
+                username:
                   example: johndoe123
+                  type: string
+                designation:
+                  type: string
+                  example: Professor
+                qualification:
+                  type: string
+                  example: PhD in Computer Science
+              type: object
+        required: true
       responses:
         '201':
           description: User registered successfully
@@ -69,31 +101,28 @@ paths:
           description: Bad request or user registration failed
         '500':
           description: Internal server error
-
+      summary: Register a new user
+      tags:
+        - Authentication
   /user/profile:
     post:
-      summary: Get user profile by ID
-      tags:
-        - Profile
-      security:
-        - jwtAuth: []
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              type: object
               properties:
                 id:
                   type: string
+              type: object
+        required: true
       responses:
         '200':
-          description: User profile retrieved successfully
           content:
-            application/json:
+            multipart/form-data:
               schema:
-                type: object
                 properties:
+                  __v:
+                    type: integer
                   _id:
                     type: string
                   email:
@@ -106,32 +135,105 @@ paths:
                     type: string
                   username:
                     type: string
-                  __v:
-                    type: integer
-
+                type: object
+          description: User profile retrieved successfully
+        '401':
+          description: Unauthorized
         '403':
           description: Forbidden
-        '401':
-           description: Unauthorized
         '500':
-           description: Server error
-  /auth/logout:
-      post:
-        summary: Logout user and invalidate token
-        description: Logs out a user and invalidates their token. The token is removed from the activeTokens set.
-        tags:
-          - Authentication
-        security:
-          - jwtAuth: []
-        requestBody:
+          description: Server error
+      security:
+        - jwtAuth: []
+      summary: Get user profile by ID
+      tags:
+        - Profile
+  /user/{userId}:
+    put:
+      parameters:
+        - description: Unique identifier of the user
+          in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                username:
+                  example: johndoe123
+                  type: string
+                department:
+                  example: Computer Science
+                  type: string
+                designation:
+                  example: Professor
+                  type: string
+                email:
+                  example: johndoe@example.com
+                  format: email
+                  type: string
+                facCode:
+                  example: FAC123
+                  type: string
+                name:
+                  example: John Doe
+                  type: string
+                phone:
+                  example: '1234567890'
+                  type: string
+                profilePic:
+                  description: Optional new profile picture file
+                  format: binary
+                  type: string
+                qualification:
+                  example: PhD in Computer Science
+                  type: string
+              type: object
+        required: true
+      responses:
+        '200':
           content:
             application/json:
               schema:
+                properties:
+                  message:
+                    type: string
+                  user:
+                    properties:
+                      username:
+                        type: string
+                      department:
+                        type: string
+                      designation:
+                        type: string
+                      email:
+                        type: string
+                      facCode:
+                        type: string
+                      name:
+                        type: string
+                      phone:
+                        type: string
+                      profilePic:
+                        type: string
+                      qualification:
+                        type: string
+                    type: object
                 type: object
-        responses:
-          '200':
-            description: Logout successful
-          '400':
-            description: No token provided
-          '401':
-            description: Invalid or expired token
+          description: User profile updated successfully
+        '400':
+          description: Bad request or user update failed
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+      security:
+        - jwtAuth: []
+      summary: Edit user profile
+      tags:
+        - Profile
