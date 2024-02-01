@@ -32,6 +32,7 @@ app.use(cors({ origin: '*' }));
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const indexRoutes = require('./routes/indexRoutes');
+const institutionRoutes = require('./routes/institutionRoutes');
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -59,6 +60,7 @@ const specs = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, customOptions));
 
 app.use('/auth', authRoutes);
+app.use('/institution', institutionRoutes);
 app.use('/user', userRoutes);
 app.use('/', indexRoutes);
 

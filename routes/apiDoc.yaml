@@ -63,6 +63,9 @@ paths:
                 department:
                   example: Computer Science
                   type: string
+                designation:
+                  example: Professor
+                  type: string
                 email:
                   example: johndoe@example.com
                   format: email
@@ -83,15 +86,12 @@ paths:
                   description: Profile picture file
                   format: binary
                   type: string
+                qualification:
+                  example: PhD in Computer Science
+                  type: string
                 username:
                   example: johndoe123
                   type: string
-                designation:
-                  type: string
-                  example: Professor
-                qualification:
-                  type: string
-                  example: PhD in Computer Science
               type: object
         required: true
       responses:
@@ -104,6 +104,98 @@ paths:
       summary: Register a new user
       tags:
         - Authentication
+  /institution/instituteDetails:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                id:
+                  type: string
+              required:
+                - id
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  address:
+                    type: string
+                  aisheNumber:
+                    type: string
+                  email:
+                    type: string
+                  headOfInstitute:
+                    type: string
+                  name:
+                    type: string
+                  phoneNumber:
+                    type: string
+                  spocId:
+                    type: string
+                type: object
+          description: Institution details retrieved successfully
+        '401':
+          description: Unauthorized access
+        '403':
+          description: Forbidden access
+        '404':
+          description: Institution not found
+        '500':
+          description: Internal server error
+      security:
+        - jwtAuth: []
+      summary: Get institution details by ID
+      tags:
+        - Institution
+
+  /institution/create:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                address:
+                  type: string
+                aisheNumber:
+                  type: string
+                email:
+                  type: string
+                headOfInstitute:
+                  type: string
+                name:
+                  type: string
+                phoneNumber:
+                  type: string
+                spocId:
+                  type: string
+              required:
+                - name
+                - address
+                - headOfInstitute
+                - aisheNumber
+                - phoneNumber
+                - email
+                - spocId
+              type: object
+        required: true
+      responses:
+        '201':
+          description: Institution registered successfully
+        '400':
+          description: Bad request or registration failed
+        '500':
+          description: Internal server error
+      security:
+        - jwtAuth: []
+      summary: Get institution details by ID
+      tags:
+        - Institution
   /user/profile:
     post:
       requestBody:
@@ -162,9 +254,6 @@ paths:
           multipart/form-data:
             schema:
               properties:
-                username:
-                  example: johndoe123
-                  type: string
                 department:
                   example: Computer Science
                   type: string
@@ -191,6 +280,9 @@ paths:
                 qualification:
                   example: PhD in Computer Science
                   type: string
+                username:
+                  example: johndoe123
+                  type: string
               type: object
         required: true
       responses:
@@ -203,8 +295,6 @@ paths:
                     type: string
                   user:
                     properties:
-                      username:
-                        type: string
                       department:
                         type: string
                       designation:
@@ -220,6 +310,8 @@ paths:
                       profilePic:
                         type: string
                       qualification:
+                        type: string
+                      username:
                         type: string
                     type: object
                 type: object
